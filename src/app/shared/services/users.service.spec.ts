@@ -6,11 +6,13 @@ import { UtilsService } from './utils.service';
 describe('user service', () => {
   //reference later to our service
   let userService: UsersService;
+  let utilService: UtilsService;
 
   //Mock
-  const utilServiceMock = {
-    pluck: jest.fn(),
-  };
+  // const utilServiceMock = {
+  //   pluck: jest.fn(),
+  // };
+
   //we must create a testing module to test service inside
   //its a block executed before every single test
   beforeEach(() => {
@@ -18,10 +20,13 @@ describe('user service', () => {
     TestBed.configureTestingModule({
       providers: [
         UsersService,
-        { provide: UtilsService, useValue: utilServiceMock },
+        UtilsService,
+        //For Mock
+        // { provide: UtilsService, useValue: utilServiceMock },
       ],
     });
     userService = TestBed.inject(UsersService);
+    utilService = TestBed.inject(UtilsService);
   });
 
   //Test if the service is created
@@ -54,8 +59,15 @@ describe('user service', () => {
 
   describe('get user name', () => {
     it('it should return username', () => {
-      utilServiceMock.pluck.mockReturnValue(['foo']);
-      expect(userService.getUSernames()).toEqual(['foo']);
+      //Mock
+      // utilServiceMock.pluck.mockReturnValue(['foo']);
+      // expect(userService.getUSernames()).toEqual(['foo']);
+
+      //Spy
+      jest.spyOn(utilService, 'pluck');
+      userService.users = [{ id: '3', name: 'ali' }];
+      userService.getUSernames();
+      expect(utilService.pluck).toHaveBeenCalledWith(userService.users, 'names');
     });
   });
 });
